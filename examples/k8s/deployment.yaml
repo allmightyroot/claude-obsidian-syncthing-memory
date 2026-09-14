@@ -1,0 +1,156 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: syncthing
+  namespace: syncthing
+spec:
+  replicas: 1
+  # Single replica on a ReadWriteOnce PVC: RollingUpdate deadlocks because the
+  # new pod can't attach the volume until the old one releases it. Recreate
+  # avoids that.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: syncthing
+  template:
+    metadata:
+      labels:
+        app: syncthing
+    spec:
+      initContainers:
+        # Syncthing 2.x dropped --no-default-folder from `generate` - this
+        # creates a default "Default" folder on first run; remove it in the
+        # GUI along with adding your real vault folder.
+        - name: init-config
+          image: syncthing/syncthing:2.1.5
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+              if [ ! -f /var/syncthing/config/config.xml ]; then
+                syncthing generate \
+                  --home=/var/syncthing/config \
+                  --gui-user="$GUI_USER" \
+                  --gui-password="$GUI_PASSWORD"
+              fi
+          env:
+            - name: GUI_USER
+              valueFrom:
+                secretKeyRef:
+                  name: syncthing-gui-secret
+                  key: username
+            - name: GUI_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: syncthing-gui-secret
+                  key: password
+          volumeMounts:
+            - name: data
+              mountPath: /var/syncthing/config
+              subPath: config
+      containers:
+        - name: syncthing
+          image: syncthing/syncthing:2.1.5
+          command: ["syncthing", "serve"]
+          args:
+            - --home=/var/syncthing/config
+            - --gui-address=0.0.0.0:8384
+            - --no-restart
+            - --no-upgrade
+          ports:
+            - name: gui
+              containerPort: 8384
+            - name: sync-tcp
+              containerPort: 22000
+              protocol: TCP
+            - name: sync-quic
+              containerPort: 22000
+              protocol: UDP
+          volumeMounts:
+            - name: data
+              mountPath: /var/syncthing/config
+              subPath: config
+            - name: data
+              mountPath: /var/syncthing/vault
+              subPath: vault
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 1000m
+              memory: 512Mi
+        # Optional: backs up the vault folder independently of Syncthing's own
+        # sync/replication state (replication isn't a backup - deletions and
+        # corruption replicate too). Runs on a timer with a pass/fail
+        # notification posted to a chat webhook after each run.
+        - name: restic-backup
+          image: restic/restic:0.19.1
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+
+              notify() {
+                local message="$1"
+                local color="$2"
+                wget -q -O- \
+                  --header='Content-Type: application/json' \
+                  --post-data="{\"attachments\":[{\"color\":\"${color}\",\"text\":\"${message}\"}]}" \
+                  "$WEBHOOK_URL" >/dev/null || echo "Failed to send notification"
+              }
+
+              run_backup() {
+                restic backup /vault --tag obsidian-vault
+                restic forget --keep-daily 7 --keep-weekly 4 --keep-monthly 6 --prune
+              }
+
+              restic snapshots >/dev/null 2>&1 || restic init
+              while true; do
+                sleep "$BACKUP_INTERVAL_SECONDS"
+                if run_backup; then
+                  notify "Vault backup completed successfully" "#36a64f"
+                else
+                  notify "Vault backup failed" "#ff0000"
+                fi
+              done
+          env:
+            - name: RESTIC_REPOSITORY
+              value: /backup-target/obsidian-vault
+            - name: BACKUP_INTERVAL_SECONDS
+              value: "21600"
+            - name: RESTIC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: syncthing-restic-secret
+                  key: password
+            - name: WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: syncthing-notify-secret
+                  key: webhook-url
+          volumeMounts:
+            - name: data
+              mountPath: /vault
+              subPath: vault
+              readOnly: true
+            - name: backup-target
+              mountPath: /backup-target
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: syncthing-data
+        - name: backup-target
+          # Swap for whatever backup destination you use - hostPath onto an
+          # NFS/NAS mount here, an object-storage-backed volume, etc.
+          hostPath:
+            path: /mnt/backup-target
+            type: Directory
