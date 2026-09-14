@@ -1,0 +1,15 @@
+{
+  "_comment": "Merge this into ~/.claude/settings.json - do not replace the file. If you already have a SessionStart entry, add another object to its array rather than overwriting the existing one; multiple hooks run fine side by side.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/load-vault-index.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
