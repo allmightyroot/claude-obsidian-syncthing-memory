@@ -156,11 +156,29 @@ updated: YYYY-MM-DD
 
 ### 3. Connect Claude Desktop via the Obsidian MCP Connector
 
-Install the **MCP Connector** community plugin inside Obsidian (runs a
-local MCP server, default port varies by install) and install the matching
-Claude Desktop extension package. This gives Claude Desktop direct
-read/write access to the vault through MCP — no filesystem access needed on
-that machine, only the sync client.
+Two separate installs here, and the second one is the part that actually
+trips people up.
+
+1. **In Obsidian**: Settings → Community plugins → Browse, search for the
+   MCP Connector plugin, install and enable it. It runs a local MCP server
+   (check the plugin's own settings tab for the port it's using). This part
+   is genuinely straightforward.
+2. **In Claude Desktop**: the plugin gives you a `.mcpb` (or `.dxt`)
+   extension file to install — this is the fiddly part.
+   - Don't drag the file onto Claude Desktop's main chat window. There's a
+     dialog that looks like it wants exactly that ("Drag .MCPB or .DXT file
+     here to install"), but dropping it on the chat window just attaches it
+     as a chat file — it never installs.
+   - Instead go to **Settings → Extensions → Advanced settings** and install
+     the file from there. Don't go looking under **Developer** settings —
+     that's for building/loading your own MCP server from source, not for
+     installing a packaged extension, and the two are easy to confuse.
+   - Restart Claude Desktop afterward and confirm the extension shows as
+     connected before relying on it in a conversation.
+
+(Menu wording may drift between Claude Desktop versions — if these exact
+labels don't match what you see, look specifically for **Extensions**, not
+**Developer**.)
 
 ### 4. Auto-load the vault index into Claude Code
 
@@ -173,7 +191,53 @@ for them.
 Claude Code needs no plugin here — it reads/writes the vault's Markdown
 files as a normal filesystem path, same as any other file in a project.
 
-### 5. Exclude version-control internals from the sync, if you version the vault
+### 5. Seed the vault with your first memories
+
+Two starting points, depending on whether you're migrating existing
+context or starting clean. In both cases, do this from **Claude Code**
+if it involves reading files outside the vault itself — Claude Desktop
+only sees the vault, through the MCP connector, not your other project
+directories.
+
+**Migrating scattered per-project memory into the vault** (e.g. you
+already have Claude Code memory in several repos and want to pull the
+cross-cutting parts into one place):
+
+```
+Inventory every existing project memory file across the working
+directories I use. For each fact you find, classify it:
+- Cross-cutting (about me, a durable preference, a standard, or shared
+  infrastructure) -> write it into the vault under memory/ (a new topic
+  file if nothing existing fits, linked from index.md), then remove it
+  from the project file.
+- Project-specific (only meaningful in the context of that one repo) ->
+  leave it where it is.
+Replace whatever's left in each project's memory with a short pointer
+block at the top referencing the vault, followed by only the
+project-specific content that survived.
+```
+
+**Starting from nothing** (either surface can run this one, since it's
+just drafting):
+
+```
+Help me draft memory/index.md for a new shared memory vault. Ask me what
+categories of durable facts are worth tracking for me (standing
+preferences, infrastructure, working-style rules, ongoing projects —
+whatever's relevant), then create one short topic file per category with
+frontmatter (tags, updated) and a one-line description of each, linked
+from index.md.
+```
+
+If you're bootstrapping a *second* vault that should follow an existing
+one's conventions, start the drafting conversation in a session that
+already has the existing vault's `index.md` loaded as context, then hand
+the actual file/directory creation off to a session with real filesystem
+access (Claude Code, or another agentic session) — a plain chat can
+describe the structure but can't create the directories or wire up
+Syncthing itself.
+
+### 6. Exclude version-control internals from the sync, if you version the vault
 
 If you `git init` the vault for real history/rollback, exclude `.git/` from
 Syncthing's sync (via `.stignore`) rather than letting Syncthing sync it —
@@ -190,7 +254,7 @@ integration wrote since the last commit — writes from the other side land
 as plain file changes via Syncthing, so git only sees them at the next
 commit, not live.
 
-### 6. Back it up
+### 7. Back it up
 
 Point a backup job at the vault's on-disk sync target independent of
 Syncthing itself — Syncthing replicates state, it doesn't protect against
@@ -198,6 +262,34 @@ deleting or corrupting a file, since deletions replicate too. The example
 Deployment includes a `restic` sidecar that snapshots the vault directory
 on a timer with retention (e.g. keep 7 daily / 4 weekly / 6 monthly) and
 posts a pass/fail notification to a chat webhook on each run.
+
+## Housekeeping
+
+The vault accumulates entropy like anything else — duplicated facts, stale
+project-memory pointers, topic files that have grown into several unrelated
+subtopics. Rather than running cleanup automatically, prompt it explicitly
+when it feels due, e.g.:
+
+> "Should we clean up your brain?"
+
+Run this from Claude Code, since it needs to check project memory across
+working directories, not just the vault itself. When it runs, it should
+check:
+
+- Project memory in any working directory touched recently that duplicates
+  something already in, or that belongs in, the vault — consolidate it
+  using the same approach as the [seeding prompt](#5-seed-the-vault-with-your-first-memories)
+  above, leaving a one-line pointer stub so old wikilinks still resolve.
+- Vault files that have grown into multiple unrelated subtopics (candidates
+  for splitting) vs. `index.md` lines that no longer describe their file
+  accurately.
+- Uncommitted changes or a messy history, if you version the vault with git.
+- Stray `*.sync-conflict-*` files anywhere under the synced folder — a sign
+  two writers edited the same file concurrently — resolved by merging into
+  the canonical file and deleting the conflict copy.
+
+This is deliberately a prompted activity, not a background job — nothing
+runs it unless you ask.
 
 ## Gotchas
 
