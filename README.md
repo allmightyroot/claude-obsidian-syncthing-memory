@@ -25,19 +25,18 @@ project.
 ## Architecture
 
 ```
-┌──────────────────────────┐                    ┌───────────────────────────┐
-│ Laptop / workstation      │                    │ Always-on cluster/server  │
-│                           │                    │                           │
-│ Claude Desktop            │                    │ Syncthing (k8s or native) │
-│  └─ Obsidian MCP          │◄── Syncthing ─────►│  - GUI  (HTTPS)           │
-│     Connector (localhost) │   protocol (mesh,  │  - Sync (TCP/UDP 22000)   │
-│                           │   TCP/UDP 22000)   │  - restic sidecar         │
-│ Obsidian.app              │                    │    → offsite backup       │
-│  └─ vault (local folder,  │                    │                           │
-│     synced)               │                    │ Claude Code               │
-└──────────────────────────┘                    │  reads/writes the same    │
-                                                   │  folder as plain files    │
-                                                   └───────────────────────────┘
+┌────────────────────────────┐              ┌─────────────────────────────────┐
+│ Laptop / workstation       │              │ Always-on host (cluster/server) │
+│                            │              │                                 │
+│ Claude Desktop             │◄── Syncthing │ Syncthing (k8s or native)       │
+│  └─ Obsidian MCP Connector │    protocol  │  - GUI  (HTTPS)                 │
+│      (local, talks MCP)    │   (mesh sync,│  - Sync (TCP/UDP 22000)         │
+│                            │  TCP/UDP     │  - restic sidecar → backup      │
+│ Obsidian.app               │   22000) ──► │                                 │
+│  └─ vault (local folder,   │              │ Claude Code                     │
+│     kept in sync)          │              │  reads/writes the vault         │
+│                            │              │  directly, as plain files       │
+└────────────────────────────┘              └─────────────────────────────────┘
 ```
 
 Three pieces, each doing one job:
