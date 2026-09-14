@@ -125,21 +125,16 @@ converges quickly regardless of when it's turned on — it is still just
 another peer in the mesh, not a server the others depend on.
 
 If you do want that, run it somewhere that's always reachable — a
-Kubernetes cluster, a home server, whatever you've already got.
-Genericized example manifests
-(originally an ArgoCD-managed Deployment on a small k3s homelab cluster,
-fronted by a private overlay-network ingress) are in [`examples/k8s/`](examples/k8s/):
+Kubernetes cluster, a home server, a small always-on VM, whatever you've
+already got. The official `syncthing/syncthing` container image works
+fine for this; wire it up with the same shape you'd give any small
+stateful service (persistent storage for its config + synced folder, the
+GUI on 8384, the sync protocol on 22000). We run ours as a single-replica
+Deployment on a small k3s cluster, fronted by a private overlay-network
+ingress for the GUI — nothing about that is required, it's just what we
+already had.
 
-- `namespace.yaml`, `pvc.yaml` — namespace + persistent storage for
-  Syncthing's config and the synced folder
-- `deployment.yaml` — the Syncthing container itself, plus an optional
-  restic sidecar that backs up the vault on a timer, independent of
-  Syncthing's own sync state
-- `service.yaml`, `ingress.yaml`, `sync-loadbalancer.yaml` — expose the GUI
-  over HTTPS and the raw sync protocol (TCP/UDP 22000) over your private
-  network
-
-Key details worth knowing before you copy these:
+Key details worth knowing regardless of how you host it:
 
 - **Single replica only.** Syncthing's config/database isn't safe for
   concurrent multi-writer access, so this is explicitly a
@@ -234,8 +229,9 @@ Inventory every existing project memory file across the working
 directories I use. For each fact you find, classify it:
 - Cross-cutting (about me, a durable preference, a standard, or shared
   infrastructure) -> write it into the vault under memory/ (a new topic
-  file if nothing existing fits, linked from index.md), then remove it
-  from the project file.
+  file if nothing existing fits, with frontmatter - tags, updated - and
+  a one-line description added to index.md), then remove it from the
+  project file.
 - Project-specific (only meaningful in the context of that one repo) ->
   leave it where it is.
 Replace whatever's left in each project's memory with a short pointer
@@ -293,14 +289,23 @@ posts a pass/fail notification to a chat webhook on each run.
 
 The vault accumulates entropy like anything else — duplicated facts, stale
 project-memory pointers, topic files that have grown into several unrelated
-subtopics. Rather than running cleanup automatically, prompt it explicitly
-when it feels due, e.g.:
+subtopics. We trigger cleanup with a short prompt when it feels due:
 
 > "Should we clean up your brain?"
 
-Run this from Claude Code, since it needs to check project memory across
-working directories, not just the vault itself. When it runs, it should
-check:
+**That phrase has no special meaning to Claude by itself** — there's no
+hook, no slash command, nothing hardcoded. It works only because the
+checklist below actually lives written down *in the vault*, in a note
+about how the vault itself should be maintained (ours is
+`memory/claude-code-pointer-convention.md`). Since that note is linked
+from `index.md`, any session that's read the index knows it exists and
+can go read it when the phrase — or something like it — comes up. If you
+skip writing the checklist down somewhere Claude can find it, the phrase
+is just words: a fresh session with no memory of this conversation has no
+way to know what "clean up" is supposed to mean.
+
+So: put something like this in its own vault note, and reference it from
+`index.md` so it's discoverable —
 
 - Project memory in any working directory touched recently that duplicates
   something already in, or that belongs in, the vault — consolidate it
@@ -314,8 +319,10 @@ check:
   two writers edited the same file concurrently — resolved by merging into
   the canonical file and deleting the conflict copy.
 
-This is deliberately a prompted activity, not a background job — nothing
-runs it unless you ask.
+Run it from Claude Code, since checking project memory across working
+directories needs real filesystem access the vault alone doesn't give you.
+And treat it as deliberately prompted, not scheduled — say so explicitly
+in that note, or a session may assume it should run this on its own.
 
 ## Gotchas
 
@@ -336,10 +343,3 @@ runs it unless you ask.
 - **Index quality matters more than volume.** Since only the index file is
   auto-loaded, a fact buried in a topic file with a vague index line is
   effectively unrecallable even though it's technically written down.
-
-## Repo layout
-
-```
-README.md            # this file
-examples/k8s/         # genericized Kubernetes manifests for the sync hub
-```
