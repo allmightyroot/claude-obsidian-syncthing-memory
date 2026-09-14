@@ -39,14 +39,25 @@ project.
 └────────────────────────────┘              └─────────────────────────────────┘
 ```
 
+*(This shows the topology we happen to run — an always-on peer in
+Kubernetes plus a laptop. Syncthing is peer-to-peer with no client/server
+distinction, so the right-hand box isn't required; see [Setup](#1-deploy-syncthing-an-always-on-hub-is-optional).)*
+
 Three pieces, each doing one job:
 
 1. **Obsidian vault** — a folder of plain Markdown files. This is the actual
    memory; Obsidian itself is just one of several front ends onto it.
 2. **Syncthing** — a peer-to-peer, self-hosted file-sync mesh (not Obsidian
-   Sync, which is a paid subscription service). One node runs in Kubernetes
-   as an always-on sync hub; other nodes (laptops, other servers) sync into
-   the same folder over the Syncthing protocol.
+   Sync, which is a paid subscription service). This is genuinely
+   client-server-free: every device in the mesh is an equal peer, and any
+   two peers that are online at the same time sync directly with each
+   other. Nothing here requires a dedicated always-on server — two laptops
+   that are occasionally both open will sync fine, they just won't get new
+   changes until they're both online together. We run one peer in
+   Kubernetes as an always-on hub (below) purely so every other device has
+   *something* reachable to sync against at any hour, without needing to
+   coordinate everyone's laptops being open simultaneously — that's a
+   convenience, not a protocol requirement.
 3. **Two Claude integrations onto the same files**:
    - **Claude Desktop** talks to the vault through the [Obsidian MCP
      Connector](https://obsidian.md) community plugin, exposed as an MCP
@@ -97,10 +108,25 @@ into the vault and leave a one-line pointer stub behind so old
 
 ## Setup
 
-### 1. Deploy Syncthing as an always-on hub
+### 1. Deploy Syncthing (an always-on hub is optional)
 
-Run Syncthing somewhere that's always reachable — a Kubernetes cluster, a
-home server, whatever you've already got. Genericized example manifests
+**If you don't already run anything server-shaped**, skip this step
+entirely: install native Syncthing on each device you want the vault on
+(laptop, desktop, phone) and pair them directly with each other. That's a
+fully working, purely peer-to-peer mesh with no server of any kind —
+devices sync whenever two of them happen to be online together. Plenty of
+setups stop right there.
+
+The only reason to add a dedicated always-on peer is convenience: without
+one, two devices that are never open at the same time (e.g. a work laptop
+and a home desktop) won't sync until they happen to overlap. An always-on
+peer just guarantees something is always reachable, so every other device
+converges quickly regardless of when it's turned on — it is still just
+another peer in the mesh, not a server the others depend on.
+
+If you do want that, run it somewhere that's always reachable — a
+Kubernetes cluster, a home server, whatever you've already got.
+Genericized example manifests
 (originally an ArgoCD-managed Deployment on a small k3s homelab cluster,
 fronted by a private overlay-network ingress) are in [`examples/k8s/`](examples/k8s/):
 
