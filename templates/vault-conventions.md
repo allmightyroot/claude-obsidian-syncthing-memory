@@ -89,6 +89,22 @@ keep adjusting them. The ones that have earned their place so far:
   by accident, rotate it rather than just deleting the line: it's already in sync
   history and backups.
 
+## Optional: logging what only exists in the moment
+
+Most of this vault holds durable facts - true no matter which session reads them.
+A few things aren't like that: a Skill firing, an MCP tool actually getting called,
+a bug you flagged to the tool vendor. A session can see those happen right now and
+has no way to reconstruct them later if they weren't written down at the time -
+not "hard to find," genuinely gone. If that's useful to have a real record of (e.g.
+"how am I actually using this day to day," not a guess), see `templates/usage-log.md`.
+
+That template is data, not instructions - the trigger belongs here instead, as its
+own rule: *whenever a Skill fires, an MCP tool actually gets called, or you create a
+feedback/bug draft, add a row to the usage log in the same turn, don't wait to be
+asked.* Same split as everything else in this vault: policy in one place, data in
+another, so you're not hunting through a log for the rule that explains why it
+exists.
+
 ## Housekeeping
 
 Triggered by asking — e.g. "should we clean up your brain?" — not on a schedule, and
