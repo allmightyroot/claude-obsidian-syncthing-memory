@@ -488,6 +488,7 @@ in that note, or a session may assume it should run this on its own.
 
 ```
 README.md                            the pattern, and how to set it up
+CHANGELOG.md                         what's changed in this repo, and why
 CLAUDE.md                            instructions for Claude Code in THIS repo -
                                      guide someone through the pattern, don't
                                      silently reconfigure their setup
@@ -501,7 +502,32 @@ templates/
   memory-index.md                    starter memory/index.md
   global-CLAUDE.md                   block for your own ~/.claude/CLAUDE.md
   project-memory-pointer.md          pointer block for an individual project
+  usage-log.md                       optional: a real record of Skills/MCP tools
+                                     you've actually used and feedback you've
+                                     reported - see vault-conventions.md for why
+scripts/
+  sync-mirrors.sh                    pull main from GitHub (where PRs land),
+                                     push it out to every mirror - see
+                                     Contributing below
 ```
 
 Everything in `templates/` and `examples/` is a starting point to copy and edit,
 not a framework to install. Take the parts that fit how you already work.
+
+## Contributing
+
+This repo mirrors to three hosts (GitHub, GitLab, Bitbucket) via one `origin`
+remote — one fetch URL, multiple push URLs, so `git push` fans out to all
+three in one command. For everywhere else I run this pattern, GitLab is the
+fetch/primary host; **this repo is the deliberate exception** — its `origin`
+fetch URL points at GitHub instead, specifically because this repo's whole
+point is being shared, and a PR is more accessible to more people on GitHub
+than GitLab.
+
+To contribute: branch, push (fans out to all three — harmless, your branch
+gets backed up too), open a PR against **GitHub**, merge there. Then run
+`scripts/sync-mirrors.sh` from `main` — it pulls the merged commit from
+GitHub and pushes it out to GitLab and Bitbucket too. Nothing propagates
+that automatically; forgetting this step is the one real bit of friction
+the mirror setup adds to a PR-based flow, so the script exists to make it
+a single command instead of something to remember.
