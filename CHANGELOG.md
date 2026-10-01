@@ -7,6 +7,14 @@ version, since this is a reference/template repo, not a versioned package.
 ## 2026-10-01
 
 ### Added
+- `examples/hooks/session-name.sh` and `examples/statusline/statusline.sh`:
+  optional per-session names, shown in the status line, so that several
+  concurrent Claude Code sessions can be told apart and can refer to each
+  other ("ask Glados"). Names persist per session ID across compaction and
+  resume, avoid collisions with other active sessions, and can be changed
+  on request. This came from real use: running one session per repo during a
+  migration, then naming them by hand because "the other session" was too
+  vague. New README section: "Optional: name your sessions".
 - `templates/status-table.md`: an optional working-style rule, and the first
   template here that tells Claude *how to respond* rather than recording a
   fact. Status and next-steps answers become one running
