@@ -505,6 +505,9 @@ templates/
   usage-log.md                       optional: a real record of Skills/MCP tools
                                      you've actually used and feedback you've
                                      reported - see vault-conventions.md for why
+  status-table.md                    optional: an example working-style rule -
+                                     "what's next" answers as one running
+                                     # | Step | Status | Owner table
 scripts/
   sync-mirrors.sh                    pull main from GitHub (where PRs land),
                                      push it out to every mirror - see
