@@ -1,7 +1,7 @@
 #!/bin/bash
 # Claude Code status line: session name, current directory (+ git branch), model.
 #
-#   Glados │ claude-config (main) │ Opus 5.5
+#   Glados │ my-project (main) │ Opus 5.5
 #
 # The session name comes from ~/.claude/session-names/<session_id>, written by
 # the session-name.sh hook, so a rename shows up on the next refresh.
