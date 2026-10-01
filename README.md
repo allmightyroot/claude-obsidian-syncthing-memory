@@ -459,6 +459,31 @@ directories needs real filesystem access the vault alone doesn't give you.
 And treat it as deliberately prompted, not scheduled — say so explicitly
 in that note, or a session may assume it should run this on its own.
 
+## Optional: name your sessions
+
+Once Claude Code sessions share one memory, it's natural to run several at
+once: one per repo during a migration, another for an unrelated change. Then
+"the other session" stops being specific enough. Two small, independent
+scripts solve it:
+
+- `examples/hooks/session-name.sh` is a `SessionStart` hook that gives each
+  session a short name (Glados, Riften, Chopper, Morticia...), tells Claude its
+  name, and tells Claude how to rename itself when asked. The name is stored
+  per session ID, so it survives compaction and `--resume`, and it avoids
+  names that other recently active sessions already hold. Edit the word list
+  freely, but leave out words you already use for something else, such as
+  hostnames.
+- `examples/statusline/statusline.sh` is a status line that shows
+  `name │ dir (branch) │ model` at the bottom of each session, so you can
+  tell windows apart without asking. Set `CLAUDE_SESSION_NAME_TMUX=1` to
+  also name the tmux window after the session.
+
+Install both by copying them into `~/.claude/` and merging the entries from
+`examples/hooks/settings.json.example`. Neither one depends on the vault.
+Together with a status-table rule like `templates/status-table.md`, the
+names also make a good Owner column: "Owner: Glados" means something to every
+session, while "Owner: me" doesn't.
+
 ## Gotchas
 
 - **Two writers, one file.** Claude Desktop (via MCP) and Claude Code (via
@@ -495,7 +520,12 @@ CLAUDE.md                            instructions for Claude Code in THIS repo -
 examples/hooks/
   load-vault-index.sh                SessionStart hook: loads the vault index and
                                      tells Claude to write back to the vault
-  settings.json.example              how to register it in ~/.claude/settings.json
+  session-name.sh                    optional SessionStart hook: a short,
+                                     persistent name for each session
+  settings.json.example              how to register these in ~/.claude/settings.json
+examples/statusline/
+  statusline.sh                      optional status line: session name,
+                                     directory and branch, model
 templates/
   vault-conventions.md               the authoritative note that lives IN the vault:
                                      boundary rules, entry quality, housekeeping
