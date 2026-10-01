@@ -4,6 +4,18 @@ Notable changes to this repo, newest first. Loosely follows
 [Keep a Changelog](https://keepachangelog.com/) — grouped by date rather than
 version, since this is a reference/template repo, not a versioned package.
 
+## 2026-10-01
+
+### Added
+- `templates/status-table.md`: an optional working-style rule, and the first
+  template here that tells Claude *how to respond* rather than recording a
+  fact. Status and next-steps answers become one running
+  `# | Step | Status | Owner` table with a fixed set of five markers
+  (chosen to stay visible in dark mode), step numbers that never change,
+  named owners so tables still make sense when relayed between sessions, and
+  finished or dropped rows kept as history. It was worked out across two real
+  vaults before being written up generically here.
+
 ## 2026-09-16
 
 ### Added
