@@ -4,6 +4,16 @@ Notable changes to this repo, newest first. Loosely follows
 [Keep a Changelog](https://keepachangelog.com/) — grouped by date rather than
 version, since this is a reference/template repo, not a versioned package.
 
+## 2026-10-02
+
+### Changed
+- Session names moved to their own repo,
+  [claude-tweaks](https://github.com/allmightyroot/claude-tweaks), which now
+  also sets each name as the session title so sessions can message each other
+  by name, across machines too. `examples/hooks/session-name.sh` and
+  `examples/statusline/statusline.sh` are removed rather than kept as a second
+  copy that would drift; the README section now points there.
+
 ## 2026-10-01
 
 ### Added
