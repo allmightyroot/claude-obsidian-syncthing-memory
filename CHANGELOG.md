@@ -4,6 +4,21 @@ Notable changes to this repo, newest first. Loosely follows
 [Keep a Changelog](https://keepachangelog.com/) — grouped by date rather than
 version, since this is a reference/template repo, not a versioned package.
 
+## 2026-10-19
+
+### Added
+- `examples/tools/vault-lint.py`: an optional formatting linter for a vault.
+  It checks hard-wrapped paragraphs and bullets, blank lines between bullets,
+  trailing whitespace, tabs, missing frontmatter, and an oversized
+  `memory/index.md`; `--fix` repairs the first three. Run it as
+  `python3 -I scripts/vault-lint.py [--fix] [PATH...]` after copying it into
+  the vault. It needs a shell, so Claude Desktop can't run it.
+- `templates/vault-conventions.md`: "Markdown formatting" and "Index size
+  budget" sections. The index budget (~6KB) exists because SessionStart hook
+  output is capped at ~10K characters, and past that a session sees only a
+  ~2KB preview of the index. The same note is in `templates/memory-index.md`
+  and the `load-vault-index.sh` comments.
+
 ## 2026-10-02
 
 ### Changed

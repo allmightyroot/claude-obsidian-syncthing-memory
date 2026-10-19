@@ -1,3 +1,8 @@
+---
+tags: [memory, usage-log]
+updated: YYYY-MM-DD
+---
+
 <!--
 Template: copy into your vault as memory/usage-log.md (or whatever you want to call
 it) and link it from memory/index.md.
@@ -24,18 +29,9 @@ there and the rows here mirrors the same split this whole vault uses everywhere 
 policy in one place, data in another.
 -->
 
----
-tags: [memory, usage-log]
-updated: YYYY-MM-DD
----
-
 # Usage Log
 
-Running catalog of concrete things I've actually used Claude for - not hypothetical
-capability claims, real examples with dates and enough context to mean something
-later. Newest entries at top. Keep each entry to what happened + why it's worth
-citing, not a full task writeup - the real detail already lives in that project's
-own memory if it's needed.
+Running catalog of concrete things I've actually used Claude for - not hypothetical capability claims, real examples with dates and enough context to mean something later. Newest entries at top. Keep each entry to what happened + why it's worth citing, not a full task writeup - the real detail already lives in that project's own memory if it's needed.
 
 ## Entries
 
@@ -47,20 +43,14 @@ own memory if it's needed.
 
 ## Skills used
 
-Claude Code ships named "Skills" - packaged instructions for a specific kind of task
-- that fire when the task calls for one. Only log one here once it's actually fired,
-not because it exists.
+Claude Code ships named "Skills" - packaged instructions for a specific kind of task - that fire when the task calls for one. Only log one here once it's actually fired, not because it exists.
 
 | Date | Skill | Used for | Project |
 |---|---|---|---|
 
 ## MCP servers
 
-MCP (Model Context Protocol) servers connect Claude to a live external system -
-a Kubernetes API, a project tracker, a chat platform - instead of it just knowing
-about one in the abstract. Two tables on purpose: what's configured/available right
-now, separate from a real log of when one actually got used for something. Don't
-list a server as "used" just because it's connected.
+MCP (Model Context Protocol) servers connect Claude to a live external system - a Kubernetes API, a project tracker, a chat platform - instead of it just knowing about one in the abstract. Two tables on purpose: what's configured/available right now, separate from a real log of when one actually got used for something. Don't list a server as "used" just because it's connected.
 
 ### Available (as of YYYY-MM-DD)
 
@@ -74,9 +64,7 @@ list a server as "used" just because it's connected.
 
 ## Bugs / feedback reported
 
-Whatever your tool's feedback/bug-report mechanism is, its local history may not be
-durable - a fixed-size queue, cleared on update, tied to one machine. This is the
-backstop.
+Whatever your tool's feedback/bug-report mechanism is, its local history may not be durable - a fixed-size queue, cleared on update, tied to one machine. This is the backstop.
 
 | Date | Title | Type | Status | Notes |
 |---|---|---|---|---|

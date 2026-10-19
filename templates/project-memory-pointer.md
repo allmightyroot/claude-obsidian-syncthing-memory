@@ -10,10 +10,7 @@ this one repo.
 
 ## Shared memory
 
-Cross-cutting facts about me, my standards, and my infrastructure live in the shared
-vault, not here: see `memory/index.md` at `<path/to/vault>` (plain markdown, synced
-across my devices). Read that first when something non-project-specific comes up, and
-write new cross-cutting facts there rather than into this file.
+Cross-cutting facts about me, my standards, and my infrastructure live in the shared vault, not here: see `memory/index.md` at `<path/to/vault>` (plain markdown, synced across my devices). Read that first when something non-project-specific comes up, and write new cross-cutting facts there rather than into this file.
 
 Only memory specific to *this* repo belongs below.
 

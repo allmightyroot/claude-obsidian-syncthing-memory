@@ -261,6 +261,26 @@ Starter [`index.md`](templates/memory-index.md) and
 [per-project pointer block](templates/project-memory-pointer.md) templates are
 there too.
 
+**Optional: lint the formatting.** The conventions note also sets markdown
+formatting rules (one line per paragraph or bullet, no loose lists,
+frontmatter on every note) and an index size budget: keep `memory/index.md`
+under ~6KB, because SessionStart hook output is capped at ~10K characters and
+past that a session sees only a ~2KB preview of the index.
+[`examples/tools/vault-lint.py`](examples/tools/vault-lint.py) checks them.
+Copy it to `scripts/` in your vault, then:
+
+```
+python3 -I scripts/vault-lint.py [--fix] [PATH...]
+```
+
+It checks for hard-wrapped paragraphs and bullets, blank lines between
+bullets, trailing whitespace, tab characters, a missing frontmatter block, and
+an oversized index. With no PATH it checks `memory/`; `--fix` repairs wrapping,
+loose lists and trailing whitespace, and the rest are only reported. Code
+fences, tables, HTML comments, block quotes and nested list items are left
+alone, and it exits 1 if anything is left. It needs Python 3 and a shell, so
+run it from Claude Code or a terminal - Claude Desktop can't run it.
+
 ### 6. Seed the vault with your first memories
 
 Two starting points, depending on whether you're migrating existing
@@ -526,6 +546,9 @@ templates/
   status-table.md                    optional: an example working-style rule -
                                      "what's next" answers as one running
                                      # | Step | Status | Owner table
+examples/tools/
+  vault-lint.py                      optional: markdown formatting + index-size
+                                     linter for your vault, with --fix
 scripts/
   sync-mirrors.sh                    pull main from GitHub (where PRs land),
                                      push it out to every mirror - see

@@ -33,6 +33,10 @@ fi
 
 index_content=$(cat "$VAULT_DIR/index.md")
 
+# Size: hook output is capped at ~10K characters, and past the cap a session gets
+# only a ~2KB preview instead of the index. Keep memory/index.md under ~6KB
+# (examples/tools/vault-lint.py has an index-size check).
+#
 # Only the index is injected, every session, in every project. Topic files are
 # read on demand - which is why each index line has to be descriptive enough to
 # tell a session with zero other context whether that file is worth opening.
