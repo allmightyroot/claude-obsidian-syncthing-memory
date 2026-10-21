@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # Install the optional skills from this repo.
 #
-#   ./install.sh --vault PATH [--dry-run]
+#   ./install.sh --vault PATH [--dry-run] [--force]
 #
 # What it does:
-#   - copies skills/<name>/ into ~/.claude/skills/ (replacing an older copy)
+#   - copies skills/<name>/ into ~/.claude/skills/, but SKIPS any skill that already
+#     exists there (it may be your own customized version); --force replaces it
 #   - seeds <vault>/memory/*-procedure.md from procedures/, ONLY when missing:
 #     once a procedure note exists in the vault, the vault copy is canonical
 #   - copies tools/vault-lint.py into <vault>/tools/ (always overwritten)
@@ -17,12 +18,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_DIR="${CLAUDE_DIR:-$HOME/.claude}"
 VAULT="${CLAUDEBRAIN_VAULT:-}"
 DRY=0
+FORCE=0
 
 while [ $# -gt 0 ]; do
   case "$1" in
     --vault) VAULT="${2:?--vault needs a path}"; shift ;;
     --dry-run) DRY=1 ;;
-    -h|--help) sed -n '2,15p' "$0"; exit 0 ;;
+    --force) FORCE=1 ;;
+    -h|--help) sed -n '2,16p' "$0"; exit 0 ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
   shift
@@ -39,6 +42,10 @@ run() {
 
 for skill in "$SCRIPT_DIR"/skills/*/; do
   name="$(basename "$skill")"
+  if [ -d "$CLAUDE_DIR/skills/$name" ] && [ "$FORCE" = 0 ]; then
+    echo "kept existing skill $name (use --force to replace it)"
+    continue
+  fi
   run mkdir -p "$CLAUDE_DIR/skills/$name"
   run cp -r "$skill". "$CLAUDE_DIR/skills/$name/"
   echo "skill $name -> $CLAUDE_DIR/skills/$name"

@@ -6,6 +6,9 @@ version, since this is a reference/template repo, not a versioned package.
 
 ## 2026-10-21
 
+### Changed
+- `install.sh` no longer replaces a skill that already exists in `~/.claude/skills/`; it keeps it and says so. `--force` restores the old replace behavior.
+
 ### Added
 - `skills/` and `install.sh`: optional `/reflect`, `/retrospective`, `/brain-cleanup`, `/brain-conflict` and `/worklog` skills. The first four are thin stubs that read their procedure from a vault note, so the procedure can improve without reinstalling.
 - `procedures/`: genericized seed notes for those stubs, copied into the vault only when missing.
