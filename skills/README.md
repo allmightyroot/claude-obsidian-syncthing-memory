@@ -22,7 +22,9 @@ note instead of reinstalling the skill.
 
 The installer copies the skills into `~/.claude/skills/`, seeds any missing procedure
 notes into the vault, and copies `tools/vault-lint.py` into `<vault>/tools/`. It never
-edits `settings.json` or your index; it prints the lines to add.
+edits `settings.json` or your index; it prints the lines to add. A skill that already
+exists in `~/.claude/skills/` is kept, since it may be your own customized version; pass
+`--force` to replace it.
 
 The skills find the vault through the `CLAUDEBRAIN_VAULT` environment variable.
 
