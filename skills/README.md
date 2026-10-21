@@ -15,21 +15,22 @@ note instead of reinstalling the skill.
 
 ## Install (Claude Code)
 
+Pick what you want. Add `--dry-run` to any of these to see what it would do first.
+
 ```
-./install.sh --vault /path/to/your/vault --dry-run   # see what it would do
-./install.sh --vault /path/to/your/vault
+./install.sh --skills worklog                       # work log only; no vault needed
+./install.sh --skills reflect,retrospective \
+             --vault ~/claude-memory --init         # plus session capture, in a plain folder
+./install.sh --vault /path/to/your/vault            # everything, into an existing vault
 ```
 
-The installer copies the skills into `~/.claude/skills/`, seeds any missing procedure
-notes into the vault, and copies `tools/vault-lint.py` into `<vault>/tools/`. It never
-edits `settings.json` or your index; it prints the lines to add. A skill that already
-exists in `~/.claude/skills/` is kept, since it may be your own customized version; pass
-`--force` to replace it.
+- `worklog` needs no vault. It seeds `~/worklog/` (or `$WORKLOG_DIR`), or `<vault>/memory/` if you pass `--vault`.
+- The other four need a vault, which is just a folder with a `memory/` inside. `--init` creates it and seeds starter notes (conventions, index, weekly log, usage log), so a plain folder works and Obsidian or a sync tool is optional.
+- The installer copies the skills into `~/.claude/skills/`, seeds the procedure notes for the skills you chose (only when missing), and copies `tools/vault-lint.py` into `<vault>/tools/` when a vault is involved.
+- It never edits `settings.json` or your index; it prints the lines to add.
+- A skill that already exists in `~/.claude/skills/` is kept, since it may be your own customized version; pass `--force` to replace it.
 
 The skills find the vault through the `CLAUDEBRAIN_VAULT` environment variable.
-
-`/worklog` works without any of this: copy `skills/worklog/` into `~/.claude/skills/`
-and run it. It falls back to `~/worklog/`, or `$WORKLOG_DIR` if you set it.
 
 ## Claude Desktop
 

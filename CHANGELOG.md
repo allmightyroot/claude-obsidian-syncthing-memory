@@ -7,6 +7,8 @@ version, since this is a reference/template repo, not a versioned package.
 ## 2026-10-21
 
 ### Changed
+- `install.sh` takes `--skills a,b,c` and `--init`. `worklog` installs with no vault at all, and `--init` creates a plain-folder vault with starter notes so `/reflect` and `/retrospective` work without Obsidian or a sync tool.
+- README opens with a pointer to the lighter install paths.
 - `install.sh` no longer replaces a skill that already exists in `~/.claude/skills/`; it keeps it and says so. `--force` restores the old replace behavior.
 
 ### Added
