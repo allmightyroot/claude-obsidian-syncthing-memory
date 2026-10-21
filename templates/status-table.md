@@ -1,3 +1,8 @@
+---
+tags: [memory, feedback, working-style]
+updated: YYYY-MM-DD
+---
+
 <!--
 Template: an example of a working-style rule, i.e. a note that tells Claude HOW to
 respond rather than recording a fact. Copy it into your vault as its own note (e.g.
@@ -15,11 +20,6 @@ reads the same when another session picks it up.
 Change it to suit you: different markers, columns, or thresholds. Replace "the user"
 with your own name if you like; a note in your own vault can speak about you directly.
 -->
-
----
-tags: [memory, feedback, working-style]
-updated: YYYY-MM-DD
----
 
 # Status / next-steps updates: one running table
 

@@ -1,3 +1,8 @@
+---
+tags: [memory, meta, convention]
+updated: YYYY-MM-DD
+---
+
 <!--
 Template: copy into your vault as memory/conventions.md (or whatever you want to
 call it) and link it from memory/index.md.
@@ -8,11 +13,6 @@ exists in the vault, is linked from the index, and spells out what those request
 should actually do. Without it, a session with no memory of how you set this up has
 nothing to go on. Edit freely; these are starting conventions, not rules handed down.
 -->
-
----
-tags: [memory, meta, convention]
-updated: YYYY-MM-DD
----
 
 # Vault Conventions
 
