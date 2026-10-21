@@ -6,6 +6,9 @@ A **reference repo**, not an application. It documents a pattern for giving Clau
 durable, cross-device memory using an Obsidian vault plus Syncthing. There's nothing
 here to build, run, deploy, or test — the README is the deliverable, and `templates/`
 and `examples/` are starting points that someone copies into *their own* setup.
+The one installable piece is `skills/` plus `install.sh`; it is optional, and the same
+rules apply: show the exact change and get a yes before running it, and prefer
+`--dry-run` first.
 
 ## How to behave when someone opens Claude Code in here
 

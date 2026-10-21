@@ -526,6 +526,15 @@ templates/
   status-table.md                    optional: an example working-style rule -
                                      "what's next" answers as one running
                                      # | Step | Status | Owner table
+  weekly-log.md, resume-fodder.md    optional: the notes /worklog maintains
+skills/                              optional slash commands (/reflect, /retrospective,
+                                     /brain-cleanup, /brain-conflict, /worklog);
+                                     see skills/README.md
+procedures/                          the vault notes those skills read, seeded into
+                                     your vault by install.sh
+tools/
+  vault-lint.py                      formatting lint and --health audit for the vault
+install.sh                           installs the skills and seeds the procedure notes
 scripts/
   sync-mirrors.sh                    pull main from GitHub (where PRs land),
                                      push it out to every mirror - see
@@ -534,6 +543,7 @@ scripts/
 
 Everything in `templates/` and `examples/` is a starting point to copy and edit,
 not a framework to install. Take the parts that fit how you already work.
+`skills/` and `install.sh` are the one installable piece, and they are optional too.
 
 ## Contributing
 
