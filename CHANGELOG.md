@@ -4,6 +4,15 @@ Notable changes to this repo, newest first. Loosely follows
 [Keep a Changelog](https://keepachangelog.com/) — grouped by date rather than
 version, since this is a reference/template repo, not a versioned package.
 
+## 2026-10-21
+
+### Added
+- `skills/` and `install.sh`: optional `/reflect`, `/retrospective`, `/brain-cleanup`, `/brain-conflict` and `/worklog` skills. The first four are thin stubs that read their procedure from a vault note, so the procedure can improve without reinstalling.
+- `procedures/`: genericized seed notes for those stubs, copied into the vault only when missing.
+- `tools/vault-lint.py`: the vault formatting linter and `--health` audit.
+- `templates/weekly-log.md` and `templates/resume-fodder.md`, the notes `/worklog` maintains.
+- gitleaks and shellcheck pre-commit hooks.
+
 ## 2026-10-02
 
 ### Changed
