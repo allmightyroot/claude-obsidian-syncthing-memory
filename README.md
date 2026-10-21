@@ -4,6 +4,11 @@ How we give Claude (both the desktop app and Claude Code) a single, durable,
 cross-device memory by treating an Obsidian vault as the source of truth and
 using Syncthing — not a paid sync service — to keep it consistent everywhere.
 
+> **Just want Claude's skills, not the whole pattern?** Clone this repo and run
+> `./install.sh --skills worklog` for a weekly work log and résumé notes, with no
+> vault, Obsidian or Syncthing. Add `reflect,retrospective` and `--vault ~/claude-memory --init`
+> to also get end-of-session capture into a plain folder. See [`skills/README.md`](skills/README.md).
+
 ## The problem this solves
 
 Claude Code's built-in per-project memory is scoped to one working directory.
