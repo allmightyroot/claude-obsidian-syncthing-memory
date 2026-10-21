@@ -29,6 +29,7 @@ SKILLS="reflect,retrospective,brain-cleanup,brain-conflict,worklog"
 DRY=0
 FORCE=0
 INIT=0
+INDEX_SEEDED=0
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -59,16 +60,47 @@ procedure_for() {
   esac
 }
 
-# Copy src to dest only when dest is missing; says what it did.
+TODAY="$(date +%F)"
+SEEDED=0
+INDEX_LINES=""
+
+# Copy src to dest only when dest is missing, setting the first `updated:` line
+# to today. Sets SEEDED=1 if it wrote the file; says what it did either way.
 seed() {
   local src="$1" dest="$2"
+  SEEDED=0
   if [ -f "$dest" ]; then
     echo "kept existing $(basename "$dest")"
-  else
-    run mkdir -p "$(dirname "$dest")"
-    run cp "$src" "$dest"
-    echo "seeded $(basename "$dest") -> $(dirname "$dest")/"
+    return
   fi
+  run mkdir -p "$(dirname "$dest")"
+  if [ "$DRY" = 1 ]; then
+    echo "[dry-run] seed $dest"
+  else
+    awk -v t="$TODAY" '!d && /^updated: /{print "updated: " t; d=1; next} {print}' "$src" > "$dest"
+  fi
+  SEEDED=1
+  echo "seeded $(basename "$dest") -> $(dirname "$dest")/"
+}
+
+# Queue an index.md line for a note this run seeded (call right after seed).
+# The backticks in the descriptions are literal markdown, not command substitution.
+# shellcheck disable=SC2016
+queue_index_line() {
+  local name="$1" desc
+  [ "$SEEDED" = 1 ] || return 0
+  case "$name" in
+    reflect-procedure) desc='`/reflect` steps: re-read the session, apply the scope test, propose a table and wait for approval, then write, index and log' ;;
+    retrospective-procedure) desc='`/retrospective` steps: one narrative write-up per notable session into `reflections/`' ;;
+    housekeeping-procedure) desc='`/brain-cleanup` steps: lint audit, judgment checks, propose a table, apply after approval' ;;
+    brain-conflict-procedure) desc='`/brain-conflict` steps: merge sync-conflict copies without losing content' ;;
+    weekly-log) desc='running log of work by week; raw material for resume-fodder' ;;
+    resume-fodder) desc='durable accomplishments worth resume language, distilled from the weekly log' ;;
+    usage-log) desc='Skills and MCP tools actually used, and feedback filed' ;;
+    *) return 0 ;;
+  esac
+  INDEX_LINES="${INDEX_LINES}- [[${name}]] — ${desc}
+"
 }
 
 IFS=',' read -r -a CHOSEN <<< "$SKILLS"
@@ -96,8 +128,11 @@ if [ "$NEEDS_VAULT" = 1 ]; then
   if [ "$INIT" = 1 ]; then
     seed "$SCRIPT_DIR/templates/vault-conventions.md" "$VAULT/memory/conventions.md"
     seed "$SCRIPT_DIR/templates/memory-index.md" "$VAULT/memory/index.md"
+    INDEX_SEEDED="$SEEDED"
     seed "$SCRIPT_DIR/templates/weekly-log.md" "$VAULT/memory/weekly-log.md"
+    queue_index_line weekly-log
     seed "$SCRIPT_DIR/templates/usage-log.md" "$VAULT/memory/usage-log.md"
+    queue_index_line usage-log
   fi
 fi
 
@@ -114,6 +149,7 @@ for name in "${CHOSEN[@]}"; do
   proc="$(procedure_for "$name")"
   if [ -n "$proc" ]; then
     seed "$SCRIPT_DIR/procedures/$proc" "$VAULT/memory/$proc"
+    queue_index_line "${proc%.md}"
   fi
 done
 
@@ -125,7 +161,9 @@ for name in "${CHOSEN[@]}"; do
       dir="${WORKLOG_DIR:-$HOME/worklog}"
     fi
     seed "$SCRIPT_DIR/templates/weekly-log.md" "$dir/weekly-log.md"
+    [ -n "$VAULT" ] && queue_index_line weekly-log
     seed "$SCRIPT_DIR/templates/resume-fodder.md" "$dir/resume-fodder.md"
+    [ -n "$VAULT" ] && queue_index_line resume-fodder
   fi
 done
 
@@ -135,14 +173,30 @@ if [ "$NEEDS_VAULT" = 1 ]; then
   run chmod +x "$VAULT/tools/vault-lint.py"
   echo "vault-lint.py -> $VAULT/tools/"
 
+  if [ -n "$INDEX_LINES" ]; then
+    if [ "$INDEX_SEEDED" = 1 ]; then
+      if [ "$DRY" = 1 ]; then
+        echo "[dry-run] would add index lines to $VAULT/memory/index.md"
+      else
+        printf '%s' "$INDEX_LINES" >> "$VAULT/memory/index.md"
+        echo "added index lines for the seeded notes to the new index.md"
+      fi
+      INDEX_STEP=""
+    else
+      INDEX_STEP="  - Add these lines to $VAULT/memory/index.md:
+$INDEX_LINES"
+    fi
+  else
+    INDEX_STEP=""
+  fi
+
   cat <<MSG
 
 Next, by hand:
-  1. Tell Claude Code where the vault is. Add to the "env" object in ~/.claude/settings.json:
+  - Tell Claude Code where the vault is. Add to the "env" object in ~/.claude/settings.json:
        "CLAUDEBRAIN_VAULT": "$VAULT"
-  2. Add one line per seeded procedure note to $VAULT/memory/index.md.
-  3. To have Claude load the index at the start of every session, see examples/hooks/.
-  4. Claude Desktop does not read ~/.claude/skills. See skills/README.md.
+${INDEX_STEP}  - To have Claude load the index at the start of every session, see examples/hooks/.
+  - Claude Desktop does not read ~/.claude/skills. See skills/README.md.
 MSG
 else
   echo

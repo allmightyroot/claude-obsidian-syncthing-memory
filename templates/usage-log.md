@@ -1,3 +1,8 @@
+---
+tags: [memory, usage-log]
+updated: YYYY-MM-DD
+---
+
 <!--
 Template: copy into your vault as memory/usage-log.md (or whatever you want to call
 it) and link it from memory/index.md.
@@ -23,11 +28,6 @@ gets created, add a row here in the same turn, not when asked." Keeping the inst
 there and the rows here mirrors the same split this whole vault uses everywhere else:
 policy in one place, data in another.
 -->
-
----
-tags: [memory, usage-log]
-updated: YYYY-MM-DD
----
 
 # Usage Log
 

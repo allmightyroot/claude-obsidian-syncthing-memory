@@ -27,7 +27,7 @@ Pick what you want. Add `--dry-run` to any of these to see what it would do firs
 - `worklog` needs no vault. It seeds `~/worklog/` (or `$WORKLOG_DIR`), or `<vault>/memory/` if you pass `--vault`.
 - The other four need a vault, which is just a folder with a `memory/` inside. `--init` creates it and seeds starter notes (conventions, index, weekly log, usage log), so a plain folder works and Obsidian or a sync tool is optional.
 - The installer copies the skills into `~/.claude/skills/`, seeds the procedure notes for the skills you chose (only when missing), and copies `tools/vault-lint.py` into `<vault>/tools/` when a vault is involved.
-- It never edits `settings.json` or your index; it prints the lines to add.
+- It never edits `settings.json`. For a vault it just created with `--init` it adds index lines for the notes it seeded; for an existing vault it prints the lines for you to add to your own `index.md`.
 - A skill that already exists in `~/.claude/skills/` is kept, since it may be your own customized version; pass `--force` to replace it.
 
 The skills find the vault through the `CLAUDEBRAIN_VAULT` environment variable.

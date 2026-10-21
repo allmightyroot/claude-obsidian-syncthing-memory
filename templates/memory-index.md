@@ -1,15 +1,15 @@
-<!--
-Template: copy into your vault as memory/index.md.
-
-This is the only file loaded into every session automatically, so keep it short and
-make every line count. Delete the example topics below and replace them with your own -
-they're here to show the shape, not to prescribe categories.
--->
-
 ---
 tags: [memory, index]
 updated: YYYY-MM-DD
 ---
+
+<!--
+Template: copy into your vault as memory/index.md.
+
+This is the only file loaded into every session automatically, so keep it short and
+make every line count. Add one line per topic note below; the commented block shows what
+a good line looks like.
+-->
 
 # Memory Index
 
@@ -20,20 +20,17 @@ distinct from regular notes elsewhere in this vault.
 
 - [[conventions]] — how this vault works: the vault/project boundary, what makes a good
   entry, the housekeeping checklist, git habit
-- [[background]] — who I am professionally, what I know well, what I'm new to, tools and
-  vendors I trust or avoid
-- [[preferences]] — standing rules for how I like work done: communication style, when to
-  ask vs. proceed, formatting and review habits
-- [[infrastructure]] — machines, networks, hosting, and how they fit together
-- [[projects]] — a map of what each project does and how they reference each other, since
-  per-project memory never carries across repos
 
 <!--
-Write each line so a session with no other context can decide whether to open the file.
+Add one line per topic note as you write it. Write each line so a session with no other
+context can decide whether to open the file. Ideas for first topics, none of them
+required: `background` (who you are professionally, what you know well), `preferences`
+(how you like work done), `infrastructure` (machines, networks, hosting), `projects`
+(what each project does and how they relate).
 
-Good:  [[deploy-standards]] — staging-first rule, who approves prod pushes, why the
+Good:  `[[deploy-standards]]` — staging-first rule, who approves prod pushes, why the
        Friday freeze exists
-Bad:   [[deploy-standards]] — notes about deployment
+Bad:   `[[deploy-standards]]` — notes about deployment
 -->
 
 ## How this folder works

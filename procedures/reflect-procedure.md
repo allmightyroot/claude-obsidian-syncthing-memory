@@ -18,7 +18,7 @@ Capture what the *next* session can't re-derive: corrections the user gave, non-
 5. **Classify each survivor:** vault note under `memory/`; that repo's own Claude Code memory (single-repo quirks; Desktop has none, so route to the closest vault note); or a stale/wrong existing note to edit or delete.
 6. **Propose, don't write.** Show a table: `# | Finding | Destination | Action (add / update / delete)`, one line each. Wait for the user to approve, trim, or redirect. Never write unapproved.
 7. **Write approved items.** Update an existing note rather than adding a near-duplicate. Decision/feedback notes carry **Why** and **How to apply**. Frontmatter on every note. Use the user's local date for `updated:`.
-8. **Housekeeping.** Add or fix the `memory/index.md` line for any new or changed note, specific enough that a zero-context session can judge relevance. Add [[wikilinks]].
+8. **Housekeeping.** Add or fix the `memory/index.md` line for any new or changed note, specific enough that a zero-context session can judge relevance. Add `[[wikilinks]]`.
 9. **Log trackable events.** If the session used a Skill, MCP server, or SendFeedback, make sure [[usage-log]] has the row. Add a [[weekly-log]] line if the session did notable work.
 10. **Commit (optional).** If the vault is a git repo, commit the edits with a short message. If not, your sync tool carries them.
 11. **Report** in two or three lines: what was saved where, and what was deliberately skipped.

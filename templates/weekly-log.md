@@ -5,7 +5,7 @@ updated: YYYY-MM-DD
 
 # Weekly Activity Log
 
-A running record of what got worked on, week by week, for recall and as the raw material [[resume-fodder]] gets distilled from. Log what happened as it happens; periodically skim it to decide what is resume-worthy and promote that up.
+A running record of what got worked on, week by week, for recall and as the raw material `resume-fodder.md` gets distilled from. Log what happened as it happens; periodically skim it to decide what is resume-worthy and promote that up.
 
 **Scope reminder:** generalize away client and internal names. Describe the kind of work and its scale, not the specifics. No credentials or confidential figures.
 
