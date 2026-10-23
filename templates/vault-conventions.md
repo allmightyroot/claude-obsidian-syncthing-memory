@@ -81,7 +81,7 @@ keep adjusting them. The ones that have earned their place so far:
 - Git history or who-changed-what. `git log` and `git blame` already know.
 - Fix recipes for bugs already fixed. The fix is in the code; the reasoning is in the
   commit message.
-- Ephemeral state: in-progress task details, what's currently on screen, conversation
+- Ephemeral state: in-progress task details, what's on screen right now, conversation
   context that dies with the session.
 - **Credentials of any kind** — tokens, keys, passwords, full webhook URLs. This vault
   replicates to every synced device, lands in every backup, and gets read into Claude
@@ -105,6 +105,25 @@ asked.* Same split as everything else in this vault: policy in one place, data i
 another, so you're not hunting through a log for the rule that explains why it
 exists.
 
+## Freshness
+
+Every fact in a note should be one of three things, so the vault doesn't fill up with
+things that used to be true:
+
+- **Timeless**: how something works, why a decision was made, a standing preference.
+  Safe to store bare.
+- **Dated**: a fact that can change (a version, a count, a capacity, an owner, a
+  status) carries an `as of YYYY-MM-DD` stamp right where it appears.
+- **Pointer**: a fast-changing fact is linked to where it lives (repo path, playbook,
+  command to run) instead of copied into the note.
+
+A bare volatile fact with no date and no source is what housekeeping flags.
+`python3 -I tools/vault-lint.py --health` reports candidates as `undated-volatile`
+(versions, GB/TB/Mbps values, node/host/repo counts and phrases like "as things stand
+today" with no date or source link on the line). It can't tell whether a fact is still true, so verify before
+dating one; don't stamp a fact you haven't checked. Accept a note as-is with
+`lint-skip: [undated-volatile]` in its frontmatter.
+
 ## Housekeeping
 
 Triggered by asking — e.g. "should we clean up your brain?" — not on a schedule, and
@@ -115,6 +134,8 @@ not proactively at the end of every session. When asked, check:
   pointer stub behind so existing `[[wikilinks]]` still resolve.
 - Notes that have grown into several unrelated subtopics (candidates for splitting),
   and `index.md` lines that no longer describe their file accurately.
+- Bare volatile facts, per the freshness rule above: date them (after checking they are
+  still true), point at their source, or delete them.
 - Uncommitted changes, if this vault is under git — and whether the commit messages
   still make the history useful.
 - Stray `*.sync-conflict-*` files anywhere under the synced folder, a sign two writers

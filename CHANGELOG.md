@@ -4,6 +4,12 @@ Notable changes to this repo, newest first. Loosely follows
 [Keep a Changelog](https://keepachangelog.com/) — grouped by date rather than
 version, since this is a reference/template repo, not a versioned package.
 
+## 2026-10-23
+
+### Added
+- `tools/vault-lint.py --health` reports `undated-volatile`: versions, GB/TB/Mbps values, node/host/repo counts and "currently" in `memory/` with no as-of date and no source link on the line. Report-only; skip a note with `lint-skip: [undated-volatile]`.
+- A "Freshness" section in `templates/vault-conventions.md` (timeless / dated / pointer) and a matching check in `procedures/housekeeping-procedure.md`.
+
 ## 2026-10-21
 
 ### Changed

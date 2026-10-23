@@ -36,8 +36,16 @@ note under the vault root (or ROOT) and reports:
                it in over 180 days (file mtime if the vault isn't a git repo or the
                file is untracked); these notes have no updated: frontmatter
   sync-conflict  any *.sync-conflict-* file
+  undated-volatile  memory/ line with a volatile fact (a version number, a capacity or
+               count with a unit, or "currently"/"right now"-style phrasing) and no
+               as-of date and no source: no YYYY-MM-DD or "as of" on the line or in its
+               section heading, and no [[wikilink]], markdown link or URL on the line.
+               Implements the "Freshness rule" in [[vault-formatting]]; IP addresses
+               are not versions. Fix by dating the fact, pointing at its source, or
+               deleting it.
 A note can suppress health rules for itself with frontmatter `lint-skip: [large-note]`
-(any of large-note, stale, stale-project-note, unindexed); use it for accepted-as-is notes.
+(any of large-note, stale, stale-project-note, unindexed, undated-volatile); use it for
+accepted-as-is notes.
 Pointer stubs (body under ~300 bytes containing a [[link]]) are exempt from
 unindexed, stale and stale-project-note: they only exist so old links resolve.
 It exits 0 even with findings unless --strict is given, so a timer can log it.
@@ -56,6 +64,15 @@ STALE_DAYS = 180
 STUB_MAX_BYTES = 300
 WIKILINK_RE = re.compile(r'\[\[([^\]\n]+?)\]\]')
 SKIP_DIRS = {'.git', '.obsidian', '.trash', 'node_modules'}
+
+# undated-volatile: a volatile fact, a date/as-of stamp, and a source pointer
+VOLATILE_RES = (
+    ('version', re.compile(r'(?<![\d.])(?!(?:10|192\.168|172\.(?:1[6-9]|2\d|3[01]))\.)v?\d+\.\d+\.\d+(?!\.?[\dx])|(?<![\w.])v\d+\.\d+(?![\d.])')),
+    ('count', re.compile(r'\b\d[\d,.]*\s?(?:[GT]i?B|[GM]bps|(?:nodes?|hosts?|repos?|pods?|Ingresses|namespaces)\b)')),
+    ('currently', re.compile(r'\b(?:currently|at present)\b', re.I)),
+)
+DATED_RE = re.compile(r'\b\d{4}-\d{2}-\d{2}\b|\bas of\b', re.I)
+SOURCE_RE = re.compile(r'\[\[|\]\([^)]*\)|https?://')
 
 
 def structural(line):
@@ -292,10 +309,39 @@ def health(root):
             age = int((time.time() - last_change(root, f)) / 86400)
             if age > STALE_DAYS:
                 findings.append((f, 1, 'stale-project-note', f'no change in {age} days'))
+    for f in sorted((root / 'memory').rglob('*.md')) if (root / 'memory').is_dir() else []:
+        if f in texts and 'undated-volatile' not in texts[f][1]['lint-skip']:
+            text = texts[f][0]
+            for n, kind, hit in undated_volatile(text, frontmatter(text)[1]):
+                findings.append((f, n, 'undated-volatile', f'{kind} "{hit}" has no as-of date or source'))
     for f in sorted(root.rglob('*.sync-conflict-*')):
         if not SKIP_DIRS & set(f.relative_to(root).parts):
             findings.append((f, 1, 'sync-conflict', 'Syncthing conflict copy'))
     return findings
+
+
+def undated_volatile(text, body_start):
+    """Yield (lineno, kind, matched text) for volatile facts with no date and no source."""
+    in_fence = False
+    section_dated = False
+    for n, line in enumerate(text.split('\n'), 1):
+        if n <= body_start:
+            continue
+        if line.lstrip().startswith(('```', '~~~')):
+            in_fence = not in_fence
+            continue
+        if in_fence or line.lstrip().startswith('<!--'):
+            continue
+        if line.startswith('#'):
+            section_dated = bool(DATED_RE.search(line))
+            continue
+        if section_dated or DATED_RE.search(line) or SOURCE_RE.search(line):
+            continue
+        for kind, rx in VOLATILE_RES:
+            m = rx.search(line)
+            if m:
+                yield n, kind, m.group(0).strip()
+                break
 
 
 def main(argv):
