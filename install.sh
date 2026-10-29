@@ -91,7 +91,7 @@ queue_index_line() {
   [ "$SEEDED" = 1 ] || return 0
   case "$name" in
     reflect-procedure) desc='`/reflect` steps: re-read the session, apply the scope test, propose a table and wait for approval, then write, index and log' ;;
-    retrospective-procedure) desc='`/retrospective` steps: one narrative write-up per notable session into `reflections/`' ;;
+    retrospective-procedure) desc='`/retrospective` steps: one narrative write-up per notable session into `retrospectives/`' ;;
     housekeeping-procedure) desc='`/brain-cleanup` steps: lint audit, judgment checks, propose a table, apply after approval' ;;
     brain-conflict-procedure) desc='`/brain-conflict` steps: merge sync-conflict copies without losing content' ;;
     weekly-log) desc='running log of work by week; raw material for resume-fodder' ;;

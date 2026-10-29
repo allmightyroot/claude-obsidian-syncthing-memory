@@ -8,7 +8,7 @@ note instead of reinstalling the skill.
 | Skill | What it does | Needs a vault? |
 |---|---|---|
 | `/reflect` | End-of-session capture of corrections, gotchas and decisions, proposed as a table first | yes |
-| `/retrospective` | One narrative write-up of a notable session into `reflections/` | yes |
+| `/retrospective` | One narrative write-up of a notable session into `retrospectives/` | yes |
 | `/brain-cleanup` | Housekeeping audit: broken links, orphans, oversized or stale notes | yes |
 | `/brain-conflict` | Merge Syncthing `*.sync-conflict-*` copies without losing content | yes |
 | `/worklog` | Weekly work log plus a short resume-worthy list, as plain markdown | no (defaults to `~/worklog/`) |

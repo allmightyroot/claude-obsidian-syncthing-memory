@@ -8,14 +8,14 @@ updated: 2026-10-15
 Canonical steps for the `/retrospective` skill, in **Claude Code or Claude Desktop**. Sibling of [[reflect-procedure]]: `/reflect` edits durable memory every session; `/retrospective` writes one narrative record of a single notable session, only when the user or Claude thinks it's worth it (migrations, long debugging hunts, multi-session efforts).
 
 ## Where output goes
-`reflections/YYYY-MM-DD-<slug>.md` at the **vault root**, not under `memory/`. It is not indexed and not auto-loaded. Use the user's local date and a 2-4 word kebab-case slug. Create the folder if missing. Never overwrite an existing file; add `-2` to the slug.
+`retrospectives/YYYY-MM-DD-<slug>.md` at the **vault root**, not under `memory/`. It is not indexed and not auto-loaded. Use the user's local date and a 2-4 word kebab-case slug. Create the folder if missing. Never overwrite an existing file; add `-2` to the slug.
 
 ## Steps
 1. **Review the process, not the product.** Approach, tool use, planning, blockers, course corrections, communication. Be honest and specific.
 2. **Write the file** with this frontmatter and template. Skip any section that doesn't apply.
    ```
    ---
-   tags: [reflection]
+   tags: [retrospective]
    date: YYYY-MM-DD
    app: claude-code | claude-desktop| claude-desktop
    session: <Claude Code session name, omit on Desktop>

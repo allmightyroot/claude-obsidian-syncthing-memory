@@ -4,7 +4,7 @@
 Usage: vault-lint.py [--fix] [PATH ...]
        vault-lint.py --health [--strict] [ROOT]
 
-PATH may be files or directories (default: memory/, reflections/ and handoff/
+PATH may be files or directories (default: memory/, retrospectives/ and handoff/
 next to this script's parent; a default directory that doesn't exist is
 skipped). Exits 1 if any issue is found (after fixing, if --fix).
 
@@ -357,7 +357,7 @@ def main(argv):
             print(f'{f.relative_to(root)}:{n}: {rule}: {msg}')
         print(f'{len(findings)} health finding(s)', file=sys.stderr)
         return 1 if findings and '--strict' in argv else 0
-    paths = args or [d for d in (root / 'memory', root / 'reflections', root / 'handoff') if d.is_dir()]
+    paths = args or [d for d in (root / 'memory', root / 'retrospectives', root / 'handoff') if d.is_dir()]
     total = 0
     for f in files_under(paths):
         text = f.read_text(encoding='utf-8')
