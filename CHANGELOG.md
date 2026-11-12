@@ -4,6 +4,11 @@ Notable changes to this repo, newest first. Loosely follows
 [Keep a Changelog](https://keepachangelog.com/) — grouped by date rather than
 version, since this is a reference/template repo, not a versioned package.
 
+## 2026-11-12
+
+### Added
+- `/nitpick` and `/nitpick-review` skills, and `templates/nitpicks.md`. `/nitpick` logs one specific friction point in how you and Claude work together as a checkbox entry (`for: claude` or `for: user`), leading with the general pattern and citing concrete evidence second; Claude also logs habits of yours that keep costing time. `/nitpick-review` works through the open entries, fixes each one and ticks it off with a note of where. Like `/worklog` they need no vault: `install.sh` seeds `nitpicks.md` into `~/nitpicks/` (or `$NITPICKS_DIR`, or `<vault>/memory/`).
+
 ## 2026-10-23
 
 ### Added

@@ -3,14 +3,16 @@
 #
 #   ./install.sh [--skills a,b,c] [--vault PATH [--init]] [--dry-run] [--force]
 #
-# Skills: reflect, retrospective, brain-cleanup, brain-conflict, worklog
-# (default: all of them).
+# Skills: reflect, retrospective, brain-cleanup, brain-conflict, worklog, nitpick,
+# nitpick-review (default: all of them).
 #
 # What it does:
 #   - copies skills/<name>/ into ~/.claude/skills/, but SKIPS any skill that already
 #     exists there (it may be your own customized version); --force replaces it
 #   - worklog needs no vault: it seeds ~/worklog/ (or $WORKLOG_DIR), or
 #     <vault>/memory/ when --vault is given
+#   - nitpick and nitpick-review need no vault either: they seed nitpicks.md into
+#     ~/nitpicks/ (or $NITPICKS_DIR), or <vault>/memory/ when --vault is given
 #   - every other skill needs a vault: --vault PATH, a folder with a memory/ inside.
 #     --init creates that folder and seeds starter notes (conventions, index,
 #     weekly log, usage log) so a plain folder works as a vault. Any sync tool is optional.
@@ -25,7 +27,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_DIR="${CLAUDE_DIR:-$HOME/.claude}"
 VAULT="${CLAUDEBRAIN_VAULT:-}"
-SKILLS="reflect,retrospective,brain-cleanup,brain-conflict,worklog"
+SKILLS="reflect,retrospective,brain-cleanup,brain-conflict,worklog,nitpick,nitpick-review"
 DRY=0
 FORCE=0
 INIT=0
@@ -38,7 +40,7 @@ while [ $# -gt 0 ]; do
     --init) INIT=1 ;;
     --dry-run) DRY=1 ;;
     --force) FORCE=1 ;;
-    -h|--help) sed -n '2,22p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,24p' "$0"; exit 0 ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
   shift
@@ -48,14 +50,15 @@ run() {
   if [ "$DRY" = 1 ]; then echo "[dry-run] $*"; else "$@"; fi
 }
 
-# The procedure note a skill reads from the vault; empty for worklog.
+# The procedure note a skill reads from the vault; empty for the self-contained
+# skills (worklog, nitpick, nitpick-review).
 procedure_for() {
   case "$1" in
     reflect) echo reflect-procedure.md ;;
     retrospective) echo retrospective-procedure.md ;;
     brain-cleanup) echo housekeeping-procedure.md ;;
     brain-conflict) echo brain-conflict-procedure.md ;;
-    worklog) echo "" ;;
+    worklog|nitpick|nitpick-review) echo "" ;;
     *) echo "error: unknown skill '$1'" >&2; exit 2 ;;
   esac
 }
@@ -94,6 +97,7 @@ queue_index_line() {
     retrospective-procedure) desc='`/retrospective` steps: one narrative write-up per notable session into `retrospectives/`' ;;
     housekeeping-procedure) desc='`/brain-cleanup` steps: lint audit, judgment checks, propose a table, apply after approval' ;;
     brain-conflict-procedure) desc='`/brain-conflict` steps: merge sync-conflict copies without losing content' ;;
+    nitpicks) desc='checkbox log of friction in how you and Claude work together; `/nitpick` adds, `/nitpick-review` fixes and ticks off' ;;
     weekly-log) desc='running log of work by week; raw material for resume-fodder' ;;
     resume-fodder) desc='durable accomplishments worth resume language, distilled from the weekly log' ;;
     usage-log) desc='Skills and MCP tools actually used, and feedback filed' ;;
@@ -108,13 +112,16 @@ NEEDS_VAULT=0
 for name in "${CHOSEN[@]}"; do
   procedure_for "$name" > /dev/null
   [ -d "$SCRIPT_DIR/skills/$name" ] || { echo "error: no such skill: $name" >&2; exit 2; }
-  [ "$name" = worklog ] || NEEDS_VAULT=1
+  case "$name" in
+    worklog|nitpick|nitpick-review) ;;
+    *) NEEDS_VAULT=1 ;;
+  esac
 done
 
 if [ "$NEEDS_VAULT" = 1 ]; then
   if [ -z "$VAULT" ]; then
     echo "error: these skills need a vault: pass --vault PATH (add --init to create it), or set CLAUDEBRAIN_VAULT" >&2
-    echo "       for just the work log, use: ./install.sh --skills worklog" >&2
+    echo "       for just the vault-free skills, use: ./install.sh --skills worklog,nitpick,nitpick-review" >&2
     exit 1
   fi
   if [ ! -d "$VAULT/memory" ]; then
@@ -167,6 +174,23 @@ for name in "${CHOSEN[@]}"; do
   fi
 done
 
+NITPICKS_SEEDED=0
+for name in "${CHOSEN[@]}"; do
+  case "$name" in
+    nitpick|nitpick-review)
+      [ "$NITPICKS_SEEDED" = 0 ] || continue
+      NITPICKS_SEEDED=1
+      if [ -n "$VAULT" ]; then
+        dir="$VAULT/memory"
+      else
+        dir="${NITPICKS_DIR:-$HOME/nitpicks}"
+      fi
+      seed "$SCRIPT_DIR/templates/nitpicks.md" "$dir/nitpicks.md"
+      [ -n "$VAULT" ] && queue_index_line nitpicks
+      ;;
+  esac
+done
+
 if [ "$NEEDS_VAULT" = 1 ]; then
   run mkdir -p "$VAULT/tools"
   run cp -f "$SCRIPT_DIR/tools/vault-lint.py" "$VAULT/tools/vault-lint.py"
@@ -200,5 +224,7 @@ ${INDEX_STEP}  - To have Claude load the index at the start of every session, se
 MSG
 else
   echo
-  echo "Done. In Claude Code, run /worklog."
+  printf 'Done. In Claude Code, run:'
+  for name in "${CHOSEN[@]}"; do printf ' /%s' "$name"; done
+  echo
 fi

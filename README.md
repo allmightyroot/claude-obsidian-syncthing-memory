@@ -532,9 +532,11 @@ templates/
                                      "what's next" answers as one running
                                      # | Step | Status | Owner table
   weekly-log.md, resume-fodder.md    optional: the notes /worklog maintains
+  nitpicks.md                        optional: the checkbox log /nitpick and
+                                     /nitpick-review maintain
 skills/                              optional slash commands (/reflect, /retrospective,
-                                     /brain-cleanup, /brain-conflict, /worklog);
-                                     see skills/README.md
+                                     /brain-cleanup, /brain-conflict, /worklog,
+                                     /nitpick, /nitpick-review); see skills/README.md
 procedures/                          the vault notes those skills read, seeded into
                                      your vault by install.sh
 tools/
